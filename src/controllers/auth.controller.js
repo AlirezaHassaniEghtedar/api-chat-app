@@ -92,7 +92,12 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
+    res.cookie("jwt", "", {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
     res.status(200).json({ message: "Logged out successfully " });
   } catch (error) {
     console.error("Error in logout controller : " + error.message);
@@ -109,7 +114,7 @@ export const updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Profile pic is required" });
     }
 
-    const user = await User.findOne(userId);
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.stauts(404).json({ message: "User not found" });
@@ -141,7 +146,7 @@ export const deleteProfilePic = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const user = await User.findOne(userId);
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -173,6 +178,7 @@ export const deleteProfilePic = async (req, res) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error in deleteProfilePic : ", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

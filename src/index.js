@@ -1,23 +1,22 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-
 import dotenv from "dotenv";
 
-import authRoutes from "./routes/auth.route.js";
+dotenv.config();
 
 import { connectDB } from "./lib/db.lib.js";
+
+import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 
 import { server, app } from "./lib/socket.js";
-
-dotenv.config();
 
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   }),
 );
